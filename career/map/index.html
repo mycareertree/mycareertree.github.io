@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Career Map – Explore All Career Paths | MyCareerTree</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="description"
+        content="Explore the complete career map for Indian students. Zoom and navigate through all possible career paths after Class 10, 12, and Graduation." />
+
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+<!-- SITE HEADER (temporary) -->
+<header class="site-header">
+  <div class="nav-container">
+    <a href="/" class="brand">MyCareerTree</a>
+    <nav class="nav-links">
+      <a href="/">Home</a>
+      <a href="/career">Career Tree</a>
+      <a href="/career/map">Career Map</a>
+      <a href="/projects">Projects</a>
+      <a href="/contact">Contact</a>
+      <a href="/about-mycareertree">About</a>
+    </nav>
+  </div>
+</header>
+
+<!-- FIXED TITLE -->
+<div class="map-title">
+  <h1>Career Map</h1>
+  <p>Zoom and explore every possible career path.</p>
+</div>
+
+<!-- MAP CANVAS -->
+<div class="map-wrapper">
+  <div class="map-canvas">
+
+    <!-- ROOT -->
+    <div class="map-node root academic">
+      After Class 10
+    </div>
+
+    <!-- STREAMS -->
+    <div class="map-row">
+
+      <div class="map-node academic">Science</div>
+      <div class="map-node professional">Commerce</div>
+      <div class="map-node professional">Arts</div>
+      <div class="map-node skill">Skill Paths</div>
+
+    </div>
+
+    <!-- DEPTH ROW -->
+    <div class="map-row">
+
+      <!-- Science -->
+      <div class="map-column">
+        <a href="/career/engineering" class="map-node academic">Engineering</a>
+        <a href="/career/medical" class="map-node academic">Medical</a>
+        <a href="/career/pure-science" class="map-node academic">Pure Science</a>
+        <a href="/career/defence" class="map-node govt">Defence</a>
+      </div>
+
+      <!-- Commerce -->
+      <div class="map-column">
+        <a href="/career/bcom" class="map-node professional">B.Com</a>
+        <a href="/career/ca-cs" class="map-node professional">CA / CS</a>
+        <a href="/career/management" class="map-node professional">Management</a>
+      </div>
+
+      <!-- Arts -->
+      <div class="map-column">
+        <a href="/career/arts" class="map-node professional">Humanities</a>
+        <a href="/career/law" class="map-node professional">Law</a>
+        <a href="/career/design" class="map-node professional">Design</a>
+      </div>
+
+      <!-- Skills -->
+      <div class="map-column">
+        <a href="/career/after-class-10/diploma" class="map-node skill">Diploma</a>
+        <a href="/career/after-class-10/iti" class="map-node skill">ITI</a>
+        <a href="/career/after-class-10/vocational-courses" class="map-node skill">
+          Vocational
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- LEGEND (FIXED) -->
+<div class="map-legend">
+  <h4>Legend</h4>
+  <ul>
+    <li><span class="dot academic"></span> Academic</li>
+    <li><span class="dot professional"></span> Professional</li>
+    <li><span class="dot skill"></span> Skill-based</li>
+    <li><span class="dot govt"></span> Government / Defence</li>
+  </ul>
+</div>
+
+</body>
+</html>
