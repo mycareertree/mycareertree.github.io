@@ -235,3 +235,124 @@ li {
   color: #ffffff;
   border-color: #2563eb;
 }
+/* =========================
+   Career Map – v1 Styling
+   ========================= */
+
+.map-title {
+  position: sticky;
+  top: 70px;
+  z-index: 20;
+  background: rgba(248, 250, 252, 0.95);
+  padding: 20px 0;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.map-title h1 {
+  margin-bottom: 6px;
+}
+
+.map-title p {
+  color: #475569;
+}
+.map-wrapper {
+  width: 100%;
+  height: calc(100vh - 160px);
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(to bottom, #f8fbff, #eef2f7);
+}
+.map-canvas {
+  width: 1600px;
+  height: 1200px;
+  margin: 0 auto;
+  position: relative;
+  padding-top: 120px;
+}
+.map-node.root {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.map-row {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  margin-top: 120px;
+}
+.map-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 60px;
+}
+.map-node {
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: #ffffff;
+  font-weight: 500;
+  text-align: center;
+  min-width: 160px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  text-decoration: none;
+  color: #0f172a;
+}
+.map-node.academic {
+  border-left: 6px solid #2563eb;
+}
+
+.map-node.professional {
+  border-left: 6px solid #16a34a;
+}
+
+.map-node.skill {
+  border-left: 6px solid #f97316;
+}
+
+.map-node.govt {
+  border-left: 6px solid #64748b;
+}
+.map-legend {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ffffff;
+  padding: 14px 16px;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+  font-size: 0.9rem;
+  z-index: 30;
+}
+
+.map-legend h4 {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.map-legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.map-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.map-legend .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.dot.academic { background: #2563eb; }
+.dot.professional { background: #16a34a; }
+.dot.skill { background: #f97316; }
+.dot.govt { background: #64748b; }
