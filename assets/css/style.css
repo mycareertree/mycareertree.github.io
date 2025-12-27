@@ -196,3 +196,42 @@ ul, ol {
 li {
   margin-bottom: 8px;
 }
+/* =========================
+   Career Tree – v1
+   ========================= */
+
+.tree {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 32px;
+  margin-top: 40px;
+}
+
+.tree-branch h3 {
+  margin-bottom: 14px;
+  color: #0f172a;
+}
+
+.tree-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tree-node {
+  display: block;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #0f172a;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.tree-node:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
