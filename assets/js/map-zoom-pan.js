@@ -1,5 +1,7 @@
 const canvas = document.querySelector(".map-canvas");
 const wrapper = document.querySelector(".map-wrapper");
+const title = document.querySelector(".map-title");
+const legend = document.querySelector(".map-legend");
 
 let scale = 1;
 let minScale = 0.5;
@@ -17,14 +19,19 @@ function updateTransform() {
     `translate(${originX}px, ${originY}px) scale(${scale})`;
 }
 
+/* RESET VIEW */
+function resetView() {
+  scale = 1;
+  originX = 0;
+  originY = 0;
+  updateTransform();
+}
+
 /* MOUSE WHEEL ZOOM */
 wrapper.addEventListener("wheel", (e) => {
   e.preventDefault();
-
   const delta = e.deltaY > 0 ? -0.1 : 0.1;
-  scale += delta;
-
-  scale = Math.min(Math.max(scale, minScale), maxScale);
+  scale = Math.min(Math.max(scale + delta, minScale), maxScale);
   updateTransform();
 }, { passive: false });
 
@@ -46,7 +53,7 @@ window.addEventListener("mouseup", () => {
   isPanning = false;
 });
 
-/* TOUCH SUPPORT (MOBILE) */
+/* TOUCH SUPPORT */
 let lastTouchDistance = null;
 
 wrapper.addEventListener("touchstart", (e) => {
@@ -55,7 +62,6 @@ wrapper.addEventListener("touchstart", (e) => {
     startX = e.touches[0].clientX - originX;
     startY = e.touches[0].clientY - originY;
   }
-
   if (e.touches.length === 2) {
     lastTouchDistance = getTouchDistance(e.touches);
   }
@@ -63,18 +69,15 @@ wrapper.addEventListener("touchstart", (e) => {
 
 wrapper.addEventListener("touchmove", (e) => {
   e.preventDefault();
-
   if (e.touches.length === 1 && isPanning) {
     originX = e.touches[0].clientX - startX;
     originY = e.touches[0].clientY - startY;
     updateTransform();
   }
-
   if (e.touches.length === 2) {
     const currentDistance = getTouchDistance(e.touches);
     if (lastTouchDistance) {
-      const delta = (currentDistance - lastTouchDistance) * 0.005;
-      scale += delta;
+      scale += (currentDistance - lastTouchDistance) * 0.005;
       scale = Math.min(Math.max(scale, minScale), maxScale);
       updateTransform();
     }
@@ -87,6 +90,27 @@ window.addEventListener("touchend", () => {
   lastTouchDistance = null;
 });
 
+/* BUTTON CONTROLS */
+document.getElementById("zoom-in").onclick = () => {
+  scale = Math.min(scale + 0.2, maxScale);
+  updateTransform();
+};
+
+document.getElementById("zoom-out").onclick = () => {
+  scale = Math.max(scale - 0.2, minScale);
+  updateTransform();
+};
+
+document.getElementById("reset-view").onclick = resetView;
+
+document.getElementById("toggle-title").onclick = () => {
+  title.style.display = title.style.display === "none" ? "block" : "none";
+};
+
+document.getElementById("toggle-legend").onclick = () => {
+  legend.style.display = legend.style.display === "none" ? "block" : "none";
+};
+
 /* HELPER */
 function getTouchDistance(touches) {
   const dx = touches[0].clientX - touches[1].clientX;
@@ -94,5 +118,5 @@ function getTouchDistance(touches) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-/* INITIAL RENDER */
+/* INITIAL */
 updateTransform();
