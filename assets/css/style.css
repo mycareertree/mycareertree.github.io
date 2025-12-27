@@ -134,3 +134,65 @@ header p {
   color: #2563eb;
   font-weight: 600;
 }
+/* =========================
+   VISUAL UPGRADE – v1
+   ========================= */
+
+/* Global background depth */
+body {
+  background: linear-gradient(
+    to bottom,
+    #f8fbff 0%,
+    #f1f5f9 50%,
+    #eef2f7 100%
+  );
+}
+
+/* Section card feel */
+.section {
+  padding: 80px 0;
+}
+
+.section .container {
+  background: #ffffff;
+  padding: 48px 42px;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+/* Text hierarchy */
+h1 {
+  letter-spacing: -0.5px;
+}
+
+h2 {
+  letter-spacing: -0.3px;
+}
+
+p {
+  font-size: 1.02rem;
+}
+
+/* Buttons polish */
+.cta-buttons a {
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.18);
+}
+
+.cta-secondary {
+  box-shadow: none;
+}
+
+/* Header visual depth */
+.site-header {
+  backdrop-filter: saturate(180%) blur(6px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Lists readability */
+ul, ol {
+  padding-left: 22px;
+}
+
+li {
+  margin-bottom: 8px;
+}
