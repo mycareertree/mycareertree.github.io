@@ -2,61 +2,112 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Career Tree – MyCareerTree</title>
+  <title>Career Tree – Explore All Career Paths | MyCareerTree</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Explore the complete career tree for Indian students. Start from Class 10 and discover every possible academic and career path step by step.">
+
+  <meta name="description"
+        content="Explore the complete career tree for Indian students. See all possible paths after Class 10 — Science, Commerce, Arts, Diploma, ITI and more." />
 
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
 
-  <!-- HERO -->
-  <header>
-    <div class="container">
-      <h1>Career Tree</h1>
-      <p>
-        MyCareerTree shows <strong>all possible career and academic paths</strong>
-        in India — clearly connected like a tree.
-        Start from where you are today and move forward step by step.
-      </p>
+<!-- SITE NAVIGATION (temporary, will be shared later) -->
+<header class="site-header">
+  <div class="nav-container">
+    <a href="/" class="brand">MyCareerTree</a>
+    <nav class="nav-links">
+      <a href="/">Home</a>
+      <a href="/career">Career Tree</a>
+      <a href="/career/paths">Paths</a>
+      <a href="/projects">Projects</a>
+      <a href="/contact">Contact</a>
+      <a href="/about-mycareertree">About</a>
+    </nav>
+  </div>
+</header>
+
+<!-- TREE INTRO -->
+<section class="section">
+  <div class="container">
+    <h1>Career Tree</h1>
+    <p>
+      Career paths are not straight lines.  
+      They branch, connect, and lead to multiple futures.
+    </p>
+    <p>
+      Start from where you are right now and explore every possible path —
+      academic, skill-based, and alternative.
+    </p>
+  </div>
+</section>
+
+<!-- ROOT SELECTION -->
+<section class="section">
+  <div class="container">
+    <h2>Where are you right now?</h2>
+
+    <div class="cta-buttons">
+      <a href="#after-class-10" class="cta-primary">After Class 10</a>
+      <a href="#" class="cta-secondary">After Class 12 (Coming Soon)</a>
+      <a href="#" class="cta-secondary">After Graduation (Coming Soon)</a>
     </div>
-  </header>
+  </div>
+</section>
 
-  <!-- HOW IT WORKS -->
-  <section class="section">
-    <div class="container">
-      <h2>How MyCareerTree Works</h2>
-      <p>
-        In India, most students are shown only a few popular options.
-        MyCareerTree is different.
-      </p>
-      <p>
-        We start from a single point — <strong>Class 10</strong> —
-        and show every valid path forward: science, commerce, arts, diploma,
-        ITI, vocational routes, defence paths, and more.
-      </p>
-      <p>
-        Each option is connected, explained honestly, and marked with reality
-        indicators so you can decide with clarity.
-      </p>
-    </div>
-  </section>
+<!-- TREE START -->
+<section class="section" id="after-class-10">
+  <div class="container">
+    <h2>Career Paths After Class 10</h2>
 
-  <!-- ENTRY POINT -->
-  <section class="section">
-    <div class="container">
-      <h2>Where Are You Right Now?</h2>
-      <p>
-        Choose your current academic stage to begin exploring the career tree.
-      </p>
+    <div class="tree">
 
-      <div class="cta-buttons">
-        <a href="/career/after-class-10" class="cta-primary">
-          After Class 10
-        </a>
+      <!-- SCIENCE -->
+      <div class="tree-branch">
+        <h3>Science</h3>
+        <div class="tree-nodes">
+          <a href="/career/engineering" class="tree-node">Engineering</a>
+          <a href="/career/medical" class="tree-node">Medical</a>
+          <a href="/career/pure-science" class="tree-node">Pure Science</a>
+          <a href="/career/defence" class="tree-node">Defence</a>
+        </div>
       </div>
+
+      <!-- COMMERCE -->
+      <div class="tree-branch">
+        <h3>Commerce</h3>
+        <div class="tree-nodes">
+          <a href="/career/bcom" class="tree-node">B.Com</a>
+          <a href="/career/ca-cs" class="tree-node">CA / CS</a>
+          <a href="/career/management" class="tree-node">Management</a>
+        </div>
+      </div>
+
+      <!-- ARTS -->
+      <div class="tree-branch">
+        <h3>Arts</h3>
+        <div class="tree-nodes">
+          <a href="/career/arts" class="tree-node">Humanities</a>
+          <a href="/career/law" class="tree-node">Law</a>
+          <a href="/career/design" class="tree-node">Design</a>
+        </div>
+      </div>
+
+      <!-- DIPLOMA & ITI -->
+      <div class="tree-branch">
+        <h3>Skill-Based Paths</h3>
+        <div class="tree-nodes">
+          <a href="/career/after-class-10/diploma" class="tree-node">Diploma</a>
+          <a href="/career/after-class-10/iti" class="tree-node">ITI</a>
+          <a href="/career/after-class-10/vocational-courses" class="tree-node">
+            Vocational Courses
+          </a>
+        </div>
+      </div>
+
     </div>
-  </section>
+  </div>
+</section>
 
 </body>
 </html>
