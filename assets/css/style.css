@@ -92,3 +92,41 @@ header p {
   max-width: 800px;
   color: #475569;
 }
+/* =========================
+   Navigation Header
+   ========================= */
+
+.site-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.nav-links a {
+  margin-left: 20px;
+  text-decoration: none;
+  font-weight: 500;
+  color: #475569;
+}
+
+.nav-links a:hover {
+  color: #2563eb;
+}
