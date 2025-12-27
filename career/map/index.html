@@ -93,6 +93,7 @@
 
 <!-- LEGEND (FIXED) -->
 <div class="map-legend">
+  <button class="toggle-btn" id="toggle-legend">⌃</button>
   <h4>Legend</h4>
   <ul>
     <li><span class="dot academic"></span> Academic</li>
@@ -101,15 +102,17 @@
     <li><span class="dot govt"></span> Government / Defence</li>
   </ul>
 </div>
+  
 <script src="/assets/js/map-zoom-pan.js"></script>
+  
 <!-- MAP CONTROLS -->
-<div class="map-controls">
-  <button id="zoom-in">＋</button>
-  <button id="zoom-out">－</button>
-  <button id="reset-view">⟳</button>
-  <button id="toggle-title">📰</button>
-  <button id="toggle-legend">🧭</button>
+<div class="map-title">
+  <h1>Career Map</h1>
+  <p>Zoom and explore every possible career path.</p>
+  <button class="toggle-btn" id="toggle-map-title">⌃</button>
 </div>
+
+<button id="reset-view" class="reset-view-btn">↻</button>
 
 </body>
 </html>
