@@ -28,9 +28,14 @@
 </header>
 
 <!-- FIXED TITLE -->
-<div class="map-title">
-  <h1>Career Map</h1>
-  <p>Zoom and explore every possible career path.</p>
+<div class="map-title" id="mapTitle">
+  <div class="map-title-content">
+    <h1>Career Map</h1>
+    <p>Explore every possible career path.</p>
+  </div>
+  <button class="chevron-btn" id="toggleMapTitle">
+    <span>⌄</span>
+  </button>
 </div>
 
 <!-- MAP CANVAS -->
@@ -92,8 +97,10 @@
 </div>
 
 <!-- LEGEND (FIXED) -->
-<div class="map-legend">
-  <button class="toggle-btn" id="toggle-legend">⌃</button>
+<div class="map-legend" id="mapLegend">
+  <button class="chevron-btn legend-toggle" id="toggleLegend">
+    <span>⌄</span>
+  </button>
   <h4>Legend</h4>
   <ul>
     <li><span class="dot academic"></span> Academic</li>
@@ -112,7 +119,9 @@
   <button class="toggle-btn" id="toggle-map-title">⌃</button>
 </div>
 
-<button id="reset-view" class="reset-view-btn">↻</button>
+<button id="resetView" class="reset-view-btn" title="Reset view">
+  ↻
+</button>
 
 </body>
 </html>
