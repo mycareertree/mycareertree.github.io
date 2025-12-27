@@ -130,3 +130,7 @@ header p {
 .nav-links a:hover {
   color: #2563eb;
 }
+.nav-links a.active {
+  color: #2563eb;
+  font-weight: 600;
+}
