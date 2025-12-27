@@ -356,3 +356,12 @@ li {
 .dot.professional { background: #16a34a; }
 .dot.skill { background: #f97316; }
 .dot.govt { background: #64748b; }
+/* Enable smooth transform for zoom & pan */
+.map-canvas {
+  transform-origin: 0 0;
+  cursor: grab;
+}
+
+.map-canvas:active {
+  cursor: grabbing;
+}
