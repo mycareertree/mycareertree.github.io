@@ -1,5 +1,5 @@
 /* =========================================
-   MyCareerTree Map Logic - V8 (Fluid Trackpad & Tuned Pinch)
+   MyCareerTree Map Logic - V9 (Auto-Center Fix)
    ========================================= */
 
 const canvas = document.querySelector(".map-canvas");
@@ -12,6 +12,9 @@ const toggleTitleBtn = document.getElementById("toggleMapTitle");
 const toggleLegendBtn = document.getElementById("toggleLegend");
 const resetBtn = document.getElementById("resetView");
 
+// Constants
+const CANVAS_WIDTH = 1600; // Must match CSS width
+
 // State Variables
 let state = {
   x: 0,
@@ -20,7 +23,7 @@ let state = {
   isPanning: false
 };
 
-// Drag Logic (Mouse)
+// Drag Logic
 let startX = 0, startY = 0;
 let isDragging = false;
 let startDragX = 0, startDragY = 0;
@@ -44,15 +47,33 @@ function requestRender() {
 }
 
 /* ===========================
-   2. CONTROLS
+   2. AUTO-CENTER LOGIC (NEW)
+   =========================== */
+function centerMap() {
+  if (!wrapper) return;
+  
+  const wrapperW = wrapper.offsetWidth;
+  // Calculate the X to center the 1600px canvas in the current screen
+  // Formula: (Screen Width - Canvas Width) / 2
+  const centerX = (wrapperW - CANVAS_WIDTH) / 2;
+  
+  state.x = centerX;
+  state.y = 50; // Start slightly down so the top node is clearly visible
+  state.scale = 1;
+  
+  requestRender();
+}
+
+// Call immediately on load
+centerMap();
+
+/* ===========================
+   3. CONTROLS
    =========================== */
 if (resetBtn) {
   resetBtn.onclick = (e) => {
     e.stopPropagation();
-    state.x = 0;
-    state.y = 0;
-    state.scale = 1;
-    requestRender();
+    centerMap(); // Reset now centers the map instead of going to 0,0
   };
 }
 
@@ -71,7 +92,7 @@ if (toggleLegendBtn) {
 }
 
 /* ===========================
-   3. DESKTOP MOUSE DRAG (PAN)
+   4. DESKTOP MOUSE DRAG (PAN)
    =========================== */
 wrapper.addEventListener("mousedown", (e) => {
   if (e.target.closest("button")) return;
@@ -107,38 +128,27 @@ window.addEventListener("mouseup", () => {
 });
 
 /* ===========================
-   4. SMART ZOOM & FLUID TRACKPAD
+   5. SMART ZOOM & FLUID TRACKPAD
    =========================== */
 wrapper.addEventListener("wheel", (e) => {
   e.preventDefault();
 
   // CASE 1: PINCH ZOOM (Ctrl + Trackpad)
-  // Browser automatically sets e.ctrlKey for trackpad pinches
   if (e.ctrlKey) {
-    // SENSITIVITY: Reduced by 30% (0.01 -> 0.007)
     applyCenteredZoom(e, -e.deltaY * 0.007);
     return;
   }
 
   // CASE 2: DETECT TRACKPAD VS MOUSE
-  // We want to allow circular/diagonal roaming (Pan).
-  // MOUSE: Usually only scrolls Vertical (deltaX is 0) and has large jumps.
-  // TRACKPAD: Can scroll Horizontal (deltaX > 0) and has smooth streams.
-  
-  // LOGIC:
-  // If there is ANY Horizontal scroll (deltaX != 0), it is definitely a Trackpad -> PAN.
-  // If the Vertical scroll is small (< 50), it is likely a Trackpad -> PAN.
-  // This allows fast diagonal movements (which have deltaX) to still PAN, fixing the "flash zoom".
   const isTrackpadMotion = Math.abs(e.deltaX) > 0 || Math.abs(e.deltaY) < 50;
 
   if (isTrackpadMotion) {
-    // TRACKPAD ROAMING (Pan)
+    // PAN
     state.x -= e.deltaX;
     state.y -= e.deltaY;
     requestRender();
   } else {
-    // MOUSE WHEEL (Zoom)
-    // Only triggers on pure vertical, large steps
+    // ZOOM
     applyCenteredZoom(e, -e.deltaY * 0.001);
   }
 }, { passive: false });
@@ -150,11 +160,9 @@ function applyCenteredZoom(e, zoomAmount) {
   // Limits
   newScale = Math.min(Math.max(newScale, 0.5), 3);
 
-  // Calculate Mouse Position Relative to Map
   const mouseWorldX = (e.clientX - state.x) / oldScale;
   const mouseWorldY = (e.clientY - state.y) / oldScale;
 
-  // Keep mouse pointer fixed on the same map spot
   state.x = e.clientX - (mouseWorldX * newScale);
   state.y = e.clientY - (mouseWorldY * newScale);
   
@@ -163,7 +171,7 @@ function applyCenteredZoom(e, zoomAmount) {
 }
 
 /* ===========================
-   5. LINK HANDLING
+   6. LINK HANDLING
    =========================== */
 document.querySelectorAll(".map-node").forEach(link => {
   link.addEventListener("click", (e) => {
@@ -176,7 +184,7 @@ document.querySelectorAll(".map-node").forEach(link => {
 });
 
 /* ===========================
-   6. MOBILE TOUCH (Pan & Pinch)
+   7. MOBILE TOUCH (Pan & Pinch)
    =========================== */
 let lastPinchDist = null;
 
@@ -208,8 +216,6 @@ wrapper.addEventListener("touchmove", (e) => {
   if (e.touches.length === 2 && lastPinchDist) {
     const newDist = getDistance(e.touches);
     const diff = newDist - lastPinchDist;
-    
-    // Mobile Pinch Sensitivity (Unchanged)
     const zoomAmount = diff * 0.0025;
     
     const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
@@ -241,6 +247,3 @@ function getDistance(touches) {
   const dy = touches[0].clientY - touches[1].clientY;
   return Math.sqrt(dx * dx + dy * dy);
 }
-
-// Initial Draw
-requestRender();
