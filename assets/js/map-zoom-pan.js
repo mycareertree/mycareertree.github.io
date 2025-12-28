@@ -1,5 +1,5 @@
 /* =========================================
-   MyCareerTree Map Logic - V7 (Trackpad Perfection)
+   MyCareerTree Map Logic - V8 (Fluid Trackpad & Tuned Pinch)
    ========================================= */
 
 const canvas = document.querySelector(".map-canvas");
@@ -20,14 +20,10 @@ let state = {
   isPanning: false
 };
 
-// Drag Logic
+// Drag Logic (Mouse)
 let startX = 0, startY = 0;
 let isDragging = false;
 let startDragX = 0, startDragY = 0;
-
-// Trackpad vs Mouse Logic
-let isTrackpadMode = false;
-let trackpadTimer = null;
 
 // Animation Frame
 let isRenderScheduled = false;
@@ -111,46 +107,38 @@ window.addEventListener("mouseup", () => {
 });
 
 /* ===========================
-   4. SMART ZOOM & TRACKPAD LOGIC
+   4. SMART ZOOM & FLUID TRACKPAD
    =========================== */
 wrapper.addEventListener("wheel", (e) => {
   e.preventDefault();
 
-  // --- LOGIC A: PINCH ZOOM (Two fingers spreading) ---
-  // Browsers trigger e.ctrlKey during trackpad pinches
+  // CASE 1: PINCH ZOOM (Ctrl + Trackpad)
+  // Browser automatically sets e.ctrlKey for trackpad pinches
   if (e.ctrlKey) {
-    // SENSITIVITY FIX: Reduced multiplier from 0.01 to 0.004
-    // This prevents "flash zooms" from slight finger scrambles
-    applyCenteredZoom(e, -e.deltaY * 0.004);
+    // SENSITIVITY: Reduced by 30% (0.01 -> 0.007)
+    applyCenteredZoom(e, -e.deltaY * 0.007);
     return;
   }
 
-  // --- LOGIC B: ROAMING vs MOUSE WHEEL ---
+  // CASE 2: DETECT TRACKPAD VS MOUSE
+  // We want to allow circular/diagonal roaming (Pan).
+  // MOUSE: Usually only scrolls Vertical (deltaX is 0) and has large jumps.
+  // TRACKPAD: Can scroll Horizontal (deltaX > 0) and has smooth streams.
   
-  // 1. Detect if this is likely a trackpad
-  // - Horizontal scroll present? -> Definitely Trackpad
-  // - Small delta (< 40)? -> Definitely Trackpad start (Mice usually jump > 50)
-  const isLikelyTrackpad = Math.abs(e.deltaX) > 0 || Math.abs(e.deltaY) < 40;
+  // LOGIC:
+  // If there is ANY Horizontal scroll (deltaX != 0), it is definitely a Trackpad -> PAN.
+  // If the Vertical scroll is small (< 50), it is likely a Trackpad -> PAN.
+  // This allows fast diagonal movements (which have deltaX) to still PAN, fixing the "flash zoom".
+  const isTrackpadMotion = Math.abs(e.deltaX) > 0 || Math.abs(e.deltaY) < 50;
 
-  // 2. "Trackpad Lock" Mechanism
-  // If we detect trackpad-like movement, LOCK this mode for 200ms.
-  // This ensures that even if you flick fast (high delta), it stays as Panning.
-  if (isLikelyTrackpad) {
-    isTrackpadMode = true;
-    clearTimeout(trackpadTimer);
-    trackpadTimer = setTimeout(() => {
-      isTrackpadMode = false;
-    }, 200);
-  }
-
-  if (isTrackpadMode) {
-    // MODE: ROAM / PAN (Like Click & Drag)
+  if (isTrackpadMotion) {
+    // TRACKPAD ROAMING (Pan)
     state.x -= e.deltaX;
     state.y -= e.deltaY;
     requestRender();
   } else {
-    // MODE: MOUSE WHEEL ZOOM
-    // Only happens if the very first movement was a large vertical jump
+    // MOUSE WHEEL (Zoom)
+    // Only triggers on pure vertical, large steps
     applyCenteredZoom(e, -e.deltaY * 0.001);
   }
 }, { passive: false });
@@ -220,9 +208,10 @@ wrapper.addEventListener("touchmove", (e) => {
   if (e.touches.length === 2 && lastPinchDist) {
     const newDist = getDistance(e.touches);
     const diff = newDist - lastPinchDist;
+    
+    // Mobile Pinch Sensitivity (Unchanged)
     const zoomAmount = diff * 0.0025;
     
-    // Zoom centered
     const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
     const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
     
