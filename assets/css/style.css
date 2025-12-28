@@ -484,29 +484,69 @@ li {
   right: -12px;
 }
 
-/* Collapsed Animations */
+/* =========================
+   Collapsed States (FIXED)
+   ========================= */
+
+/* --- 1. Map Header (Collapsed) --- */
+
 .map-title.collapsed {
-  transform: translateY(-100%);
-  opacity: 0;
-  pointer-events: none;
+  /* Don't hide the parent! Just make it see-through */
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom: none;
+  box-shadow: none;
+  pointer-events: none; /* Allows clicks to pass through the empty area */
 }
 
-.map-title.collapsed #toggleMapTitle {
-  pointer-events: auto;
-  transform: translateY(120%) rotate(180deg);
-  opacity: 1;
+/* Hide the text content inside */
+.map-title.collapsed .map-title-content {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
 }
+
+/* Fix the Button: Make it visible and clickable */
+.map-title.collapsed #toggleMapTitle {
+  pointer-events: auto; /* Re-enable clicking */
+  transform: rotate(180deg); /* Flip Arrow */
+  background: #ffffff; /* Ensure button stays white */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Add shadow back */
+}
+
+
+/* --- 2. Map Legend (Collapsed) --- */
 
 .map-legend.collapsed {
-  transform: translateY(100%);
-  opacity: 0;
+  /* Don't move the parent away! Just make it invisible to clicks/eyes */
+  background: transparent;
+  box-shadow: none;
   pointer-events: none;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  padding: 0;
 }
 
+/* Hide the List and Title */
+.map-legend.collapsed ul,
+.map-legend.collapsed h4 {
+  display: none; /* Completely remove from layout */
+}
+
+/* Fix the Button */
 .map-legend.collapsed #toggleLegend {
   pointer-events: auto;
-  top: -40px;
-  right: 0;
+  position: relative; /* Reset position context */
+  top: auto;
+  right: auto;
+  margin: 0;
   transform: rotate(180deg);
-  opacity: 1;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  
+  /* Ensure it doesn't jump around */
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
 }
