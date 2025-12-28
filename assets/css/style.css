@@ -339,15 +339,14 @@ li {
 .map-canvas {
   width: 1600px;
   height: 1200px;
-  margin: 0 auto;
+  /* REMOVED: margin: 0 auto; */
+  margin: 0; /* Reset margin so JS can control position perfectly */
   position: relative;
   padding-top: 120px;
   
-  /* GPU Acceleration */
+  /* GPU Acceleration settings */
   transform-origin: 0 0;
   will-change: transform;
-  
-  /* NEW: Prevents text selection while dragging */
   user-select: none;
   -webkit-user-select: none;
 }
