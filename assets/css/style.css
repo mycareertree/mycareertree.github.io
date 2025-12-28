@@ -236,25 +236,98 @@ li {
   border-color: #2563eb;
 }
 /* =========================
-   Career Map – v1 Styling
+   Career Map – Compact Header V2
    ========================= */
 
+/* 1. The Header Container */
 .map-title {
   position: sticky;
-  top: 70px;
-  z-index: 20;
-  background: rgba(248, 250, 252, 0.95);
-  padding: 20px 0;
-  text-align: center;
+  top: 70px; /* Sticks just below the main nav */
+  background: rgba(248, 250, 252, 0.95); /* Slight blur/transparency */
   border-bottom: 1px solid #e5e7eb;
+  padding: 8px 16px; /* Reduced padding for compactness */
+  z-index: 25;
+  transition: all 0.3s ease; /* Smooth hiding animation */
+  min-height: 50px; /* Force a compact height */
+  
+  /* Flexbox to center text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 2. Text Content */
+.map-title-content {
+  text-align: center;
+  transition: opacity 0.2s ease;
 }
 
 .map-title h1 {
-  margin-bottom: 6px;
+  font-size: 1.1rem; /* Smaller font size */
+  margin: 0;
+  color: #0f172a;
+  line-height: 1.2;
 }
 
 .map-title p {
+  font-size: 0.8rem; /* Smaller subtext */
+  margin: 0;
+  color: #64748b;
+  display: inline-block; /* Keeps it compact */
+}
+
+/* 3. The Toggle Button (Bottom Right) */
+#toggleMapTitle {
+  position: absolute;
+  right: 15px;
+  bottom: 8px; /* Pinned to bottom right */
+  
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%; /* Circle shape */
+  width: 26px;
+  height: 26px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   color: #475569;
+  z-index: 30;
+  transition: transform 0.3s ease;
+}
+
+#toggleMapTitle span {
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: -2px; /* Visual alignment fix */
+}
+
+/* 4. HIDDEN STATE (Completely Invisible Background) */
+.map-title.collapsed {
+  background: transparent; /* No background */
+  border-bottom: none; /* No border */
+  pointer-events: none; /* Clicks pass through to the map */
+  min-height: 0; /* Shrink height */
+  height: 0;
+  padding: 0;
+  overflow: visible; /* Allow button to remain visible */
+}
+
+.map-title.collapsed .map-title-content {
+  opacity: 0;
+  pointer-events: none;
+  display: none; /* Remove from flow */
+}
+
+/* Button behavior when hidden */
+.map-title.collapsed #toggleMapTitle {
+  pointer-events: auto; /* Button stays clickable */
+  transform: rotate(180deg); /* Flip arrow up */
+  top: 10px; /* Position it nicely floating */
+  bottom: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Stronger shadow to see against map */
 }
 .map-wrapper {
   width: 100%;
