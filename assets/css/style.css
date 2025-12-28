@@ -343,11 +343,13 @@ li {
   position: relative;
   padding-top: 120px;
   
-  /* NEW: Forces GPU acceleration */
+  /* GPU Acceleration */
   transform-origin: 0 0;
-  will-change: transform; 
-  /* NEW: Prevents blurry text during zoom on some devices */
-  backface-visibility: hidden; 
+  will-change: transform;
+  
+  /* NEW: Prevents text selection while dragging */
+  user-select: none;
+  -webkit-user-select: none;
 }
 .map-node.root {
   position: absolute;
