@@ -1,246 +1,513 @@
-/* =========================================
-   MyCareerTree Map Logic - V8 (Fluid Trackpad & Tuned Pinch)
-   ========================================= */
+/* =========================
+   MyCareerTree – Base Styles
+   ========================= */
 
-const canvas = document.querySelector(".map-canvas");
-const wrapper = document.querySelector(".map-wrapper");
-
-// UI Elements
-const mapTitle = document.getElementById("mapTitle");
-const mapLegend = document.getElementById("mapLegend");
-const toggleTitleBtn = document.getElementById("toggleMapTitle");
-const toggleLegendBtn = document.getElementById("toggleLegend");
-const resetBtn = document.getElementById("resetView");
-
-// State Variables
-let state = {
-  x: 0,
-  y: 0,
-  scale: 1,
-  isPanning: false
-};
-
-// Drag Logic (Mouse)
-let startX = 0, startY = 0;
-let isDragging = false;
-let startDragX = 0, startDragY = 0;
-
-// Animation Frame
-let isRenderScheduled = false;
-
-/* ===========================
-   1. CORE RENDERER
-   =========================== */
-function render() {
-  canvas.style.transform = `translate3d(${state.x}px, ${state.y}px, 0px) scale(${state.scale})`;
-  isRenderScheduled = false;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-function requestRender() {
-  if (!isRenderScheduled) {
-    requestAnimationFrame(render);
-    isRenderScheduled = true;
-  }
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  color: #1f2937;
+  line-height: 1.6;
+  background: linear-gradient(to bottom, #f8fbff, #eef2f7);
 }
 
-/* ===========================
-   2. CONTROLS
-   =========================== */
-if (resetBtn) {
-  resetBtn.onclick = (e) => {
-    e.stopPropagation();
-    state.x = 0;
-    state.y = 0;
-    state.scale = 1;
-    requestRender();
-  };
+/* Layout */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 0 20px;
 }
 
-if (toggleTitleBtn) {
-  toggleTitleBtn.onclick = (e) => {
-    e.stopPropagation();
-    if(mapTitle) mapTitle.classList.toggle("collapsed");
-  };
+/* Header */
+header {
+  padding: 0px 0 0px;
+  text-align: center;
 }
 
-if (toggleLegendBtn) {
-  toggleLegendBtn.onclick = (e) => {
-    e.stopPropagation();
-    if(mapLegend) mapLegend.classList.toggle("collapsed");
-  };
+header h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
-/* ===========================
-   3. DESKTOP MOUSE DRAG (PAN)
-   =========================== */
-wrapper.addEventListener("mousedown", (e) => {
-  if (e.target.closest("button")) return;
-  
-  state.isPanning = true;
-  isDragging = false;
-  
-  startX = e.clientX - state.x;
-  startY = e.clientY - state.y;
-  
-  startDragX = e.clientX;
-  startDragY = e.clientY;
-  
-  wrapper.style.cursor = "grabbing";
-});
-
-window.addEventListener("mousemove", (e) => {
-  if (!state.isPanning) return;
-  e.preventDefault();
-  
-  const moveDist = Math.hypot(e.clientX - startDragX, e.clientY - startDragY);
-  if (moveDist > 5) isDragging = true;
-
-  state.x = e.clientX - startX;
-  state.y = e.clientY - startY;
-  
-  requestRender();
-});
-
-window.addEventListener("mouseup", () => {
-  state.isPanning = false;
-  wrapper.style.cursor = "grab";
-});
-
-/* ===========================
-   4. SMART ZOOM & FLUID TRACKPAD
-   =========================== */
-wrapper.addEventListener("wheel", (e) => {
-  e.preventDefault();
-
-  // CASE 1: PINCH ZOOM (Ctrl + Trackpad)
-  // Browser automatically sets e.ctrlKey for trackpad pinches
-  if (e.ctrlKey) {
-    // SENSITIVITY: Reduced by 30% (0.01 -> 0.007)
-    applyCenteredZoom(e, -e.deltaY * 0.007);
-    return;
-  }
-
-  // CASE 2: DETECT TRACKPAD VS MOUSE
-  // We want to allow circular/diagonal roaming (Pan).
-  // MOUSE: Usually only scrolls Vertical (deltaX is 0) and has large jumps.
-  // TRACKPAD: Can scroll Horizontal (deltaX > 0) and has smooth streams.
-  
-  // LOGIC:
-  // If there is ANY Horizontal scroll (deltaX != 0), it is definitely a Trackpad -> PAN.
-  // If the Vertical scroll is small (< 50), it is likely a Trackpad -> PAN.
-  // This allows fast diagonal movements (which have deltaX) to still PAN, fixing the "flash zoom".
-  const isTrackpadMotion = Math.abs(e.deltaX) > 0 || Math.abs(e.deltaY) < 50;
-
-  if (isTrackpadMotion) {
-    // TRACKPAD ROAMING (Pan)
-    state.x -= e.deltaX;
-    state.y -= e.deltaY;
-    requestRender();
-  } else {
-    // MOUSE WHEEL (Zoom)
-    // Only triggers on pure vertical, large steps
-    applyCenteredZoom(e, -e.deltaY * 0.001);
-  }
-}, { passive: false });
-
-function applyCenteredZoom(e, zoomAmount) {
-  const oldScale = state.scale;
-  let newScale = oldScale + zoomAmount;
-
-  // Limits
-  newScale = Math.min(Math.max(newScale, 0.5), 3);
-
-  // Calculate Mouse Position Relative to Map
-  const mouseWorldX = (e.clientX - state.x) / oldScale;
-  const mouseWorldY = (e.clientY - state.y) / oldScale;
-
-  // Keep mouse pointer fixed on the same map spot
-  state.x = e.clientX - (mouseWorldX * newScale);
-  state.y = e.clientY - (mouseWorldY * newScale);
-  
-  state.scale = newScale;
-  requestRender();
+header p {
+  font-size: 1.15rem;
+  margin-top: 16px;
+  color: #475569;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* ===========================
-   5. LINK HANDLING
-   =========================== */
-document.querySelectorAll(".map-node").forEach(link => {
-  link.addEventListener("click", (e) => {
-    if (isDragging) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  });
-  link.addEventListener("dragstart", (e) => e.preventDefault());
-});
-
-/* ===========================
-   6. MOBILE TOUCH (Pan & Pinch)
-   =========================== */
-let lastPinchDist = null;
-
-wrapper.addEventListener("touchstart", (e) => {
-  if (e.target.closest("button")) return;
-
-  if (e.touches.length === 1) {
-    state.isPanning = true;
-    startX = e.touches[0].clientX - state.x;
-    startY = e.touches[0].clientY - state.y;
-  }
-  else if (e.touches.length === 2) {
-    state.isPanning = false;
-    lastPinchDist = getDistance(e.touches);
-  }
-}, { passive: false });
-
-wrapper.addEventListener("touchmove", (e) => {
-  if (state.isPanning || e.touches.length === 2) e.preventDefault();
-
-  // 1. Pan
-  if (state.isPanning && e.touches.length === 1) {
-    state.x = e.touches[0].clientX - startX;
-    state.y = e.touches[0].clientY - startY;
-    requestRender();
-  }
-  
-  // 2. Pinch Zoom
-  if (e.touches.length === 2 && lastPinchDist) {
-    const newDist = getDistance(e.touches);
-    const diff = newDist - lastPinchDist;
-    
-    // Mobile Pinch Sensitivity (Unchanged)
-    const zoomAmount = diff * 0.0025;
-    
-    const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-    const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-    
-    const oldScale = state.scale;
-    let newScale = oldScale + zoomAmount;
-    newScale = Math.min(Math.max(newScale, 0.5), 3);
-
-    const worldX = (centerX - state.x) / oldScale;
-    const worldY = (centerY - state.y) / oldScale;
-
-    state.x = centerX - (worldX * newScale);
-    state.y = centerY - (worldY * newScale);
-    state.scale = newScale;
-
-    requestRender();
-    lastPinchDist = newDist;
-  }
-}, { passive: false });
-
-window.addEventListener("touchend", () => {
-  state.isPanning = false;
-  lastPinchDist = null;
-});
-
-function getDistance(touches) {
-  const dx = touches[0].clientX - touches[1].clientX;
-  const dy = touches[0].clientY - touches[1].clientY;
-  return Math.sqrt(dx * dx + dy * dy);
+/* CTA buttons */
+.cta-buttons {
+  margin-top: 32px;
 }
 
-// Initial Draw
-requestRender();
+.cta-buttons a {
+  display: inline-block;
+  margin: 10px;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.cta-primary {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.cta-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.cta-secondary {
+  border: 2px solid #2563eb;
+  color: #2563eb;
+}
+
+.cta-secondary:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Section */
+.section {
+  padding: 80px 0;
+}
+
+.section h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #0f172a;
+}
+
+.section p {
+  max-width: 800px;
+  color: #475569;
+}
+/* =========================
+   Navigation Header
+   ========================= */
+
+.site-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.nav-links a {
+  margin-left: 20px;
+  text-decoration: none;
+  font-weight: 500;
+  color: #475569;
+}
+
+.nav-links a:hover {
+  color: #2563eb;
+}
+.nav-links a.active {
+  color: #2563eb;
+  font-weight: 600;
+}
+/* =========================
+   VISUAL UPGRADE – v1
+   ========================= */
+
+/* Global background depth */
+body {
+  background: linear-gradient(
+    to bottom,
+    #f8fbff 0%,
+    #f1f5f9 50%,
+    #eef2f7 100%
+  );
+}
+
+/* Section card feel */
+.section {
+  padding: 80px 0;
+}
+
+.section .container {
+  background: #ffffff;
+  padding: 48px 42px;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+/* Text hierarchy */
+h1 {
+  letter-spacing: -0.5px;
+}
+
+h2 {
+  letter-spacing: -0.3px;
+}
+
+p {
+  font-size: 1.02rem;
+}
+
+/* Buttons polish */
+.cta-buttons a {
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.18);
+}
+
+.cta-secondary {
+  box-shadow: none;
+}
+
+/* Header visual depth */
+.site-header {
+  backdrop-filter: saturate(180%) blur(6px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Lists readability */
+ul, ol {
+  padding-left: 22px;
+}
+
+li {
+  margin-bottom: 8px;
+}
+/* =========================
+   Career Tree – v1
+   ========================= */
+
+.tree {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 32px;
+  margin-top: 40px;
+}
+
+.tree-branch h3 {
+  margin-bottom: 14px;
+  color: #0f172a;
+}
+
+.tree-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tree-node {
+  display: block;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #0f172a;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.tree-node:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+/* =========================
+   Career Map – v1 Styling
+   ========================= */
+
+.map-title {
+  position: sticky;
+  top: 70px;
+  z-index: 20;
+  background: rgba(248, 250, 252, 0.95);
+  padding: 20px 0;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.map-title h1 {
+  margin-bottom: 6px;
+}
+
+.map-title p {
+  color: #475569;
+}
+.map-wrapper {
+  width: 100%;
+  height: calc(100vh - 160px);
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(to bottom, #f8fbff, #eef2f7);
+}
+.map-canvas {
+  width: 1600px;
+  height: 1200px;
+  margin: 0 auto;
+  position: relative;
+  padding-top: 120px;
+  
+  /* NEW: Forces GPU acceleration */
+  transform-origin: 0 0;
+  will-change: transform; 
+  /* NEW: Prevents blurry text during zoom on some devices */
+  backface-visibility: hidden; 
+}
+.map-node.root {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.map-row {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  margin-top: 120px;
+}
+.map-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 60px;
+}
+.map-node {
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: #ffffff;
+  font-weight: 500;
+  text-align: center;
+  min-width: 160px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  text-decoration: none;
+  color: #0f172a;
+}
+.map-node.academic {
+  border-left: 6px solid #2563eb;
+}
+
+.map-node.professional {
+  border-left: 6px solid #16a34a;
+}
+
+.map-node.skill {
+  border-left: 6px solid #f97316;
+}
+
+.map-node.govt {
+  border-left: 6px solid #64748b;
+}
+.map-legend {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ffffff;
+  padding: 14px 16px;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+  font-size: 0.9rem;
+  z-index: 30;
+}
+
+.map-legend h4 {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.map-legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.map-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.map-legend .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.dot.academic { background: #2563eb; }
+.dot.professional { background: #16a34a; }
+.dot.skill { background: #f97316; }
+.dot.govt { background: #64748b; }
+/* Enable smooth transform for zoom & pan */
+.map-canvas {
+  transform-origin: 0 0;
+  cursor: grab;
+}
+
+.map-canvas:active {
+  cursor: grabbing;
+}
+/* =========================
+   Map Controls
+   ========================= */
+
+.map-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 40;
+}
+
+.map-controls button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.map-controls button:active {
+  transform: scale(0.95);
+}
+/* ===== Toggle Buttons ===== */
+.toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #475569;
+}
+
+/* Header toggle position */
+.map-title {
+  position: relative;
+}
+
+/* Legend toggle position */
+.map-legend {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+.map-legend .toggle-btn {
+  top: 6px;
+  right: 6px;
+}
+
+/* Reset View Button */
+.reset-view-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #2563eb;
+  z-index: 50;
+}
+/* ===== Chevron buttons ===== */
+.chevron-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #475569;
+}
+
+.chevron-btn span {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+/* Map Title */
+.map-title {
+  position: sticky;
+  top: 70px;
+  background: rgba(248, 250, 252, 0.96);
+  border-bottom: 1px solid #e5e7eb;
+  padding: 16px;
+  z-index: 25;
+}
+
+.map-title.collapsed .map-title-content {
+  display: none;
+}
+
+.map-title.collapsed .chevron-btn span {
+  transform: rotate(180deg);
+}
+
+/* Legend */
+.map-legend {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ffffff;
+  padding: 14px 16px;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+  z-index: 30;
+}
+
+.map-legend.collapsed ul,
+.map-legend.collapsed h4 {
+  display: none;
+}
+
+.map-legend.collapsed .chevron-btn span {
+  transform: rotate(180deg);
+}
+
+.legend-toggle {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+
+/* Reset view */
+.reset-view-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 26px;
+  color: #2563eb;
+  cursor: pointer;
+  z-index: 40;
+}
