@@ -515,63 +515,137 @@ li {
   color: #2563eb;
   z-index: 50;
 }
-/* ===== Chevron buttons ===== */
-.chevron-btn {
-  background: none;
-  border: none;
-  font-size: 18px;
+/* =========================
+   Map Toggle Buttons (Professional Circle)
+   ========================= */
+
+/* Common style for both buttons */
+#toggleMapTitle,
+#toggleLegend {
+  /* Shape & Background */
+  width: 36px;
+  height: 36px;
+  background-color: #ffffff;
+  border-radius: 50%; /* Makes it a perfect circle */
+  border: 1px solid #e2e8f0; /* Subtle border */
+  
+  /* Shadow for "floating" feel */
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
+  
+  /* Centering the arrow */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Interaction */
   cursor: pointer;
-  color: #475569;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+  
+  /* Remove default button ugly styles */
+  outline: none;
+  padding: 0;
 }
 
-.chevron-btn span {
-  display: inline-block;
-  transition: transform 0.25s ease;
+/* Icon Text Styling */
+#toggleMapTitle span,
+#toggleLegend span {
+  font-size: 18px;
+  font-weight: bold;
+  color: #475569; /* Slate gray professional color */
+  margin-top: -3px; /* Tiny adjustment to center the text visually */
+  transition: transform 0.3s ease;
 }
 
-/* Map Title */
+/* Hover Effect */
+#toggleMapTitle:hover,
+#toggleLegend:hover {
+  background-color: #f8fafc;
+  transform: translateY(-2px); /* Slight lift */
+  box-shadow: 0 6px 15px rgba(15, 23, 42, 0.15);
+  border-color: #cbd5e1;
+}
+
+/* Active/Click Effect */
+#toggleMapTitle:active,
+#toggleLegend:active {
+  transform: translateY(0) scale(0.95);
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.1);
+}
+
+/* =========================
+   Positioning (Specifics)
+   ========================= */
+
+/* 1. Map Title Header Button -> Bottom Right */
 .map-title {
   position: sticky;
   top: 70px;
-  background: rgba(248, 250, 252, 0.96);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid #e5e7eb;
   padding: 16px;
   z-index: 25;
+  transition: all 0.3s ease;
 }
 
-.map-title.collapsed .map-title-content {
-  display: none;
+#toggleMapTitle {
+  position: absolute;
+  right: 16px;
+  bottom: -18px; /* Floating half-out of the header */
 }
 
-.map-title.collapsed .chevron-btn span {
-  transform: rotate(180deg);
-}
-
-/* Legend */
+/* 2. Legend Button -> Top Right */
 .map-legend {
   position: fixed;
   bottom: 20px;
   right: 20px;
   background: #ffffff;
-  padding: 14px 16px;
-  border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+  padding: 16px 20px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   z-index: 30;
+  transition: all 0.3s ease;
 }
 
-.map-legend.collapsed ul,
-.map-legend.collapsed h4 {
-  display: none;
-}
-
-.map-legend.collapsed .chevron-btn span {
-  transform: rotate(180deg);
-}
-
-.legend-toggle {
+#toggleLegend {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: -12px; /* Floating slightly above */
+  right: -12px; /* Floating slightly outside */
+}
+
+/* =========================
+   Collapsed States (Animations)
+   ========================= */
+
+/* When Header is Hidden */
+.map-title.collapsed {
+  transform: translateY(-100%); /* Slide up completely */
+  opacity: 0;
+  pointer-events: none; /* Let clicks pass through */
+}
+
+/* Button must stay visible and move down */
+.map-title.collapsed #toggleMapTitle {
+  pointer-events: auto;
+  transform: translateY(120%) rotate(180deg); /* Move down + Rotate arrow */
+  opacity: 1;
+}
+
+/* When Legend is Hidden */
+.map-legend.collapsed {
+  transform: translateY(100%); /* Slide down */
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Button moves up + Rotate */
+.map-legend.collapsed #toggleLegend {
+  pointer-events: auto;
+  top: -40px; /* Stay visible above the hidden box */
+  right: 0;
+  transform: rotate(180deg);
+  opacity: 1;
 }
 
 /* Reset view */
