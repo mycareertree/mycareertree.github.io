@@ -2,17 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Career Map – Explore All Career Paths | MyCareerTree</title>
+  <title>Career Map – Complete Career Tree | MyCareerTree</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <meta name="description"
-        content="Explore the complete career map for Indian students. Zoom and navigate through all possible career paths after Class 10, 12, and Graduation." />
+        content="Explore the complete career map for Indian students. Zoom and navigate through all possible career paths from Class 10 to PhD and Leadership roles." />
 
   <link rel="stylesheet" href="/assets/css/style.css">
+  
+  <style>
+    .map-canvas {
+      height: 1600px !important; /* Increased height for new levels */
+      width: 1800px !important;  /* Increased width for pyramid base */
+    }
+  </style>
 </head>
 <body>
 
-<!-- SITE HEADER (temporary) -->
 <header class="site-header">
   <div class="nav-container">
     <a href="/" class="brand">MyCareerTree</a>
@@ -27,65 +33,95 @@
   </div>
 </header>
 
-<!-- FIXED TITLE -->
 <div class="map-title" id="mapTitle">
   <div class="map-title-content">
     <h1>Career Map</h1>
-    <p>Explore every possible career path.</p>
+    <p>Class 10 ➔ Graduation ➔ Masters ➔ Leadership</p>
   </div>
+  <button class="chevron-btn" id="toggleMapTitle">
+    <span>⌄</span>
+  </button>
 </div>
 
-<!-- MAP CANVAS -->
 <div class="map-wrapper">
   <div class="map-canvas">
 
-    <!-- ROOT -->
     <div class="map-node root academic">
-      After Class 10
+      Class 10
     </div>
 
-    <!-- STREAMS -->
-    <div class="map-row">
-
-      <div class="map-node academic">Science</div>
+    <div class="map-row" style="margin-top: 80px;">
+      <div class="map-node academic">Science (PCM/PCB)</div>
       <div class="map-node professional">Commerce</div>
-      <div class="map-node professional">Arts</div>
-      <div class="map-node skill">Skill Paths</div>
+      <div class="map-node professional">Arts / Humanities</div>
+      <div class="map-node skill">Skill / Diploma</div>
+    </div>
+
+    <div class="map-row" style="margin-top: 80px;">
+      
+      <div class="map-column">
+        <span class="branch-label">Engineering & Med</span>
+        <a href="/career/engineering" class="map-node academic">B.Tech / B.E.</a>
+        <a href="/career/medical" class="map-node academic">MBBS / BDS</a>
+        <a href="/career/pure-science" class="map-node academic">B.Sc / Research</a>
+        <a href="/career/defence" class="map-node govt">NDA (Defence)</a>
+      </div>
+
+      <div class="map-column">
+        <span class="branch-label">Finance & Biz</span>
+        <a href="/career/ca-cs" class="map-node professional">CA / CS / CMA</a>
+        <a href="/career/bcom" class="map-node professional">B.Com / BBA</a>
+        <a href="/career/management" class="map-node professional">BMS / IPM</a>
+      </div>
+
+      <div class="map-column">
+        <span class="branch-label">Creative & Law</span>
+        <a href="/career/law" class="map-node professional">Law (BA-LLB)</a>
+        <a href="/career/arts" class="map-node professional">BA (Pol/Hist/Psy)</a>
+        <a href="/career/design" class="map-node professional">B.Des / Mass Comm</a>
+      </div>
+
+      <div class="map-column">
+        <span class="branch-label">Vocational</span>
+        <a href="/career/after-class-10/diploma" class="map-node skill">Polytechnic</a>
+        <a href="/career/after-class-10/iti" class="map-node skill">ITI Trades</a>
+        <a href="/career/after-class-10/vocational-courses" class="map-node skill">Certifications</a>
+      </div>
 
     </div>
 
-    <!-- DEPTH ROW -->
-    <div class="map-row">
-
-      <!-- Science -->
+    <div class="map-row" style="margin-top: 100px;">
+      
       <div class="map-column">
-        <a href="/career/engineering" class="map-node academic">Engineering</a>
-        <a href="/career/medical" class="map-node academic">Medical</a>
-        <a href="/career/pure-science" class="map-node academic">Pure Science</a>
-        <a href="/career/defence" class="map-node govt">Defence</a>
+        <span class="branch-label">Specialization</span>
+        <div class="map-node academic">M.Tech / MS</div>
+        <div class="map-node academic">MD / MS (Medical)</div>
+        <div class="map-node govt">IES / PSU Jobs</div>
       </div>
 
-      <!-- Commerce -->
       <div class="map-column">
-        <a href="/career/bcom" class="map-node professional">B.Com</a>
-        <a href="/career/ca-cs" class="map-node professional">CA / CS</a>
-        <a href="/career/management" class="map-node professional">Management</a>
+        <span class="branch-label">Management & Govt</span>
+        <div class="map-node professional">MBA (CAT/XAT)</div>
+        <div class="map-node govt">UPSC (IAS/IPS)</div>
+        <div class="map-node govt">Banking / SSC</div>
       </div>
 
-      <!-- Arts -->
       <div class="map-column">
-        <a href="/career/arts" class="map-node professional">Humanities</a>
-        <a href="/career/law" class="map-node professional">Law</a>
-        <a href="/career/design" class="map-node professional">Design</a>
+        <span class="branch-label">Expertise</span>
+        <div class="map-node professional">LLM (Law)</div>
+        <div class="map-node professional">Masters (MA/M.Sc)</div>
+        <div class="map-node skill">B.Tech Lateral (via Diploma)</div>
       </div>
 
-      <!-- Skills -->
+    </div>
+
+    <div class="map-row" style="margin-top: 100px;">
+      
       <div class="map-column">
-        <a href="/career/after-class-10/diploma" class="map-node skill">Diploma</a>
-        <a href="/career/after-class-10/iti" class="map-node skill">ITI</a>
-        <a href="/career/after-class-10/vocational-courses" class="map-node skill">
-          Vocational
-        </a>
+        <div class="map-node academic" style="border-color: gold;">PhD / Research</div>
+        <div class="map-node professional" style="border-color: gold;">CEO / CTO / CXO</div>
+        <div class="map-node govt" style="border-color: gold;">Policy Maker / Judge</div>
+        <div class="map-node skill" style="border-color: gold;">Entrepreneur</div>
       </div>
 
     </div>
@@ -93,24 +129,21 @@
   </div>
 </div>
 
-<!-- LEGEND (FIXED) -->
 <div class="map-legend" id="mapLegend">
+  <button class="chevron-btn legend-toggle" id="toggleLegend">
+    <span>⌄</span>
+  </button>
   <h4>Legend</h4>
   <ul>
-    <li><span class="dot academic"></span> Academic</li>
+    <li><span class="dot academic"></span> Academic / Core</li>
     <li><span class="dot professional"></span> Professional</li>
-    <li><span class="dot skill"></span> Skill-based</li>
-    <li><span class="dot govt"></span> Government / Defence</li>
+    <li><span class="dot skill"></span> Skill / Startup</li>
+    <li><span class="dot govt"></span> Govt / Defence</li>
   </ul>
 </div>
   
 <script src="/assets/js/map-zoom-pan.js"></script>
-  
-<!-- MAP CONTROLS -->
-  
-<button id="resetView" class="reset-view-btn" title="Reset view">
-  ↻
-</button>
+<button id="resetView" class="reset-view-btn" title="Reset view">↻</button>
 
 </body>
 </html>
