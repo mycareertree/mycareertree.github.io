@@ -1,5 +1,5 @@
 /* =========================================
-   MyCareerTree Map Logic - V5 (Centered Zoom & Touchpad Fix)
+   MyCareerTree Map Logic - V6 (Final Polish)
    ========================================= */
 
 const canvas = document.querySelector(".map-canvas");
@@ -32,7 +32,6 @@ let isRenderScheduled = false;
    1. CORE RENDERER
    =========================== */
 function render() {
-  // Translate3d + Scale for GPU Acceleration
   canvas.style.transform = `translate3d(${state.x}px, ${state.y}px, 0px) scale(${state.scale})`;
   isRenderScheduled = false;
 }
@@ -93,7 +92,6 @@ window.addEventListener("mousemove", (e) => {
   if (!state.isPanning) return;
   e.preventDefault();
   
-  // Detection for "Click vs Drag"
   const moveDist = Math.hypot(e.clientX - startDragX, e.clientY - startDragY);
   if (moveDist > 5) isDragging = true;
 
@@ -109,35 +107,35 @@ window.addEventListener("mouseup", () => {
 });
 
 /* ===========================
-   4. SMART ZOOM (Centered on Mouse)
+   4. SMART ZOOM & TRACKPAD LOGIC
    =========================== */
 wrapper.addEventListener("wheel", (e) => {
   e.preventDefault();
 
-  // --- LOGIC: PAN vs ZOOM ---
-  // If Ctrl key is pressed (Pinch on trackpad) -> ZOOM
-  // If no Ctrl key -> Check device type roughly
-  // For this version: Let's allow simple Wheel to Zoom centered, 
-  // but if it's horizontal scrolling, we Pan.
-  
+  // CASE 1: PINCH ZOOM (Trackpad gesture usually sets ctrlKey)
   if (e.ctrlKey) {
-    // PINCH ZOOM (Trackpad standard)
     applyCenteredZoom(e, -e.deltaY * 0.01);
+    return;
+  }
+
+  // CASE 2: DISTINGUISH MOUSE vs TRACKPAD
+  // Mouse wheels typically send large, discrete steps (e.g., 100, 120).
+  // Trackpads send small, continuous streams (e.g., 2, 5, 13).
+  // ALSO: If there is ANY horizontal scroll (deltaX), it is definitely a trackpad.
+  
+  // Heuristic: If delta is small (< 50) OR has horizontal movement, treat as PAN.
+  const isLikelyTrackpad = Math.abs(e.deltaX) > 0 || Math.abs(e.deltaY) < 50;
+
+  if (isLikelyTrackpad) {
+    // TRACKPAD 2-FINGER MOVEMENT -> PAN (ROAM)
+    // Matches "click and drag" behavior 1:1
+    state.x -= e.deltaX;
+    state.y -= e.deltaY;
+    requestRender();
   } else {
-    // STANDARD SCROLL
-    // If it's a Trackpad (usually sends small deltaX), let's PAN.
-    // If it's a Mouse Wheel (usually large deltaY only), let's ZOOM.
-    
-    // Simple heuristic: If horizontal scroll exists, assume Trackpad Pan
-    if (Math.abs(e.deltaX) > 0) {
-      state.x -= e.deltaX;
-      state.y -= e.deltaY;
-      requestRender();
-    } else {
-      // Vertical only: Zoom (Standard Map Behavior)
-      // Use smaller intensity for smoother mouse wheel
-      applyCenteredZoom(e, -e.deltaY * 0.001); 
-    }
+    // MOUSE WHEEL -> ZOOM
+    // Standard Desktop behavior
+    applyCenteredZoom(e, -e.deltaY * 0.001);
   }
 }, { passive: false });
 
@@ -148,13 +146,11 @@ function applyCenteredZoom(e, zoomAmount) {
   // Limits
   newScale = Math.min(Math.max(newScale, 0.5), 3);
 
-  // Calculate Mouse Position Relative to Map (World Coordinates)
-  // formula: world_x = (mouse_screen_x - map_translation_x) / map_scale
+  // Calculate Mouse Position Relative to Map
   const mouseWorldX = (e.clientX - state.x) / oldScale;
   const mouseWorldY = (e.clientY - state.y) / oldScale;
 
   // Calculate New Translation to keep Mouse Position fixed
-  // formula: new_trans_x = mouse_screen_x - (mouse_world_x * new_scale)
   state.x = e.clientX - (mouseWorldX * newScale);
   state.y = e.clientY - (mouseWorldY * newScale);
   
@@ -179,49 +175,39 @@ document.querySelectorAll(".map-node").forEach(link => {
    6. MOBILE TOUCH (Pan & Pinch)
    =========================== */
 let lastPinchDist = null;
-let lastTouchX = 0, lastTouchY = 0;
 
 wrapper.addEventListener("touchstart", (e) => {
   if (e.target.closest("button")) return;
 
   if (e.touches.length === 1) {
-    // Single Finger Pan
     state.isPanning = true;
     startX = e.touches[0].clientX - state.x;
     startY = e.touches[0].clientY - state.y;
   }
   else if (e.touches.length === 2) {
-    // Two Finger Pinch - Reset Pan to avoid jumping
     state.isPanning = false;
     lastPinchDist = getDistance(e.touches);
-    
-    // Calculate center of pinch for zooming
-    lastTouchX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-    lastTouchY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
   }
 }, { passive: false });
 
 wrapper.addEventListener("touchmove", (e) => {
   if (state.isPanning || e.touches.length === 2) e.preventDefault();
 
-  // 1. Pan
   if (state.isPanning && e.touches.length === 1) {
     state.x = e.touches[0].clientX - startX;
     state.y = e.touches[0].clientY - startY;
     requestRender();
   }
   
-  // 2. Pinch Zoom
   if (e.touches.length === 2 && lastPinchDist) {
     const newDist = getDistance(e.touches);
     const diff = newDist - lastPinchDist;
     const zoomAmount = diff * 0.0025;
     
-    // Use the center of the two fingers as the zoom origin
+    // Zoom centered between fingers
     const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
     const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
     
-    // Reuse the centered zoom logic but adapting for Touch center
     const oldScale = state.scale;
     let newScale = oldScale + zoomAmount;
     newScale = Math.min(Math.max(newScale, 0.5), 3);
