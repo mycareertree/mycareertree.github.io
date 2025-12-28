@@ -1,5 +1,5 @@
 /* =========================================
-   MyCareerTree Map Logic - High Performance V3
+   MyCareerTree Map Logic - V4 (Desktop Fix)
    ========================================= */
 
 const canvas = document.querySelector(".map-canvas");
@@ -22,15 +22,18 @@ let state = {
   startY: 0
 };
 
-// Render Loop Variables
+// Track if we are actually dragging (to prevent link clicks)
+let isDragging = false;
+let startDragX = 0;
+let startDragY = 0;
+
+// Render Scheduler
 let isRenderScheduled = false;
 
 /* ===========================
-   1. PERFORMANCE CORE (The Smoothness Fix)
+   1. CORE RENDERER
    =========================== */
-
 function render() {
-  // Uses translate3d to force GPU acceleration
   canvas.style.transform = `translate3d(${state.x}px, ${state.y}px, 0px) scale(${state.scale})`;
   isRenderScheduled = false;
 }
@@ -43,9 +46,8 @@ function requestRender() {
 }
 
 /* ===========================
-   2. RESET & CONTROLS
+   2. CONTROLS
    =========================== */
-
 if (resetBtn) {
   resetBtn.onclick = (e) => {
     e.stopPropagation();
@@ -56,38 +58,51 @@ if (resetBtn) {
   };
 }
 
-// Toggle Buttons
 if (toggleTitleBtn) {
   toggleTitleBtn.onclick = (e) => {
     e.stopPropagation();
-    mapTitle.classList.toggle("collapsed");
+    if(mapTitle) mapTitle.classList.toggle("collapsed");
   };
 }
 
 if (toggleLegendBtn) {
   toggleLegendBtn.onclick = (e) => {
     e.stopPropagation();
-    mapLegend.classList.toggle("collapsed");
+    if(mapLegend) mapLegend.classList.toggle("collapsed");
   };
 }
 
 /* ===========================
-   3. MOUSE EVENTS (Desktop)
+   3. DESKTOP MOUSE EVENTS
    =========================== */
-
 wrapper.addEventListener("mousedown", (e) => {
-  if (e.target.closest("button") || e.target.closest("a")) return;
+  // Only stop drag if clicking a BUTTON. 
+  // We ALLOW dragging on links (<a>) now!
+  if (e.target.closest("button")) return;
   
   state.isPanning = true;
+  isDragging = false; // Reset drag check
+  
   state.startX = e.clientX - state.x;
   state.startY = e.clientY - state.y;
+  
+  // Track click start pos to detect drag distance later
+  startDragX = e.clientX;
+  startDragY = e.clientY;
+  
   wrapper.style.cursor = "grabbing";
 });
 
 window.addEventListener("mousemove", (e) => {
   if (!state.isPanning) return;
+  e.preventDefault();
   
-  e.preventDefault(); // Prevents text selection while dragging
+  // Check if user moved more than 5 pixels (threshold for "Drag")
+  const moveDist = Math.hypot(e.clientX - startDragX, e.clientY - startDragY);
+  if (moveDist > 5) {
+    isDragging = true; // Mark as "Dragging" so we don't open links
+  }
+
   state.x = e.clientX - state.startX;
   state.y = e.clientY - state.startY;
   
@@ -100,50 +115,75 @@ window.addEventListener("mouseup", () => {
 });
 
 /* ===========================
-   4. TOUCH EVENTS (Mobile - Optimized)
+   4. SMART LINK CLICKING
+   =========================== */
+// Intercept all clicks on the map links
+const allLinks = document.querySelectorAll(".map-node");
+allLinks.forEach(link => {
+  link.addEventListener("click", (e) => {
+    // If we were dragging, BLOCK the click (don't open link)
+    if (isDragging) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    // Otherwise, let the link work naturally
+  });
+  
+  // Prevent default HTML5 drag behavior on links
+  link.addEventListener("dragstart", (e) => {
+    e.preventDefault();
+  });
+});
+
+/* ===========================
+   5. MOUSE WHEEL ZOOM (Desktop)
+   =========================== */
+wrapper.addEventListener("wheel", (e) => {
+  e.preventDefault();
+
+  const zoomIntensity = 0.001;
+  const newScale = state.scale - (e.deltaY * zoomIntensity);
+
+  // Apply Limits
+  state.scale = Math.min(Math.max(newScale, 0.5), 3);
+  requestRender();
+}, { passive: false });
+
+/* ===========================
+   6. MOBILE TOUCH EVENTS
    =========================== */
 let lastPinchDist = null;
 
 wrapper.addEventListener("touchstart", (e) => {
-  if (e.target.closest("button") || e.target.closest("a")) return;
+  if (e.target.closest("button")) return;
 
-  // Pan Start
   if (e.touches.length === 1) {
     state.isPanning = true;
     state.startX = e.touches[0].clientX - state.x;
     state.startY = e.touches[0].clientY - state.y;
   }
-  // Pinch Start
   else if (e.touches.length === 2) {
     state.isPanning = false;
     lastPinchDist = getDistance(e.touches);
   }
-}, { passive: false }); // 'passive: false' allows us to stop scrolling
+}, { passive: false });
 
 wrapper.addEventListener("touchmove", (e) => {
-  // STOP THE BROWSER FROM SCROLLING THE PAGE
-  if (state.isPanning || e.touches.length === 2) {
-    e.preventDefault(); 
-  }
+  if (state.isPanning || e.touches.length === 2) e.preventDefault();
 
-  // Logic: Pan
+  // Pan
   if (state.isPanning && e.touches.length === 1) {
     state.x = e.touches[0].clientX - state.startX;
     state.y = e.touches[0].clientY - state.startY;
     requestRender();
   }
   
-  // Logic: Pinch Zoom
+  // Zoom
   if (e.touches.length === 2 && lastPinchDist) {
     const newDist = getDistance(e.touches);
     const diff = newDist - lastPinchDist;
-    
-    // Zoom Sensitivity (Lower = Smoother/Heavier)
     state.scale += diff * 0.0025;
-    
-    // Limits (0.5x to 3x)
     state.scale = Math.min(Math.max(state.scale, 0.5), 3);
-    
     requestRender();
     lastPinchDist = newDist;
   }
@@ -154,7 +194,6 @@ window.addEventListener("touchend", () => {
   lastPinchDist = null;
 });
 
-// Helper Math
 function getDistance(touches) {
   const dx = touches[0].clientX - touches[1].clientX;
   const dy = touches[0].clientY - touches[1].clientY;
